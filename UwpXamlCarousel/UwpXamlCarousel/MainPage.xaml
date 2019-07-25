@@ -1,0 +1,153 @@
+﻿<Page
+    x:Class="UwpXamlCarousel.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:UwpXamlCarousel"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    
+    <Page.Resources>
+        <ResourceDictionary>
+            <Style x:Key="CarouselNextPrevButtonStyle" TargetType="Button">
+                <Setter Property="VerticalAlignment" Value="Stretch"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Padding" Value="20,0"/>
+                <Setter Property="IsEnabled" Value="False"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Grid>
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualStateGroup.Transitions>
+                                            <VisualTransition To="Disabled">
+                                                <VisualTransition.Storyboard>
+                                                    <Storyboard TargetName="CarouselNextPrevButtonTemplateContentPresenter" TargetProperty="FontIcon.Opacity">
+                                                        <DoubleAnimation From="1" To="0" Duration="0:0:0.100" EnableDependentAnimation="True"/>
+                                                    </Storyboard>
+                                                </VisualTransition.Storyboard>
+                                            </VisualTransition>
+                                            <VisualTransition From="Disabled">
+                                                <VisualTransition.Storyboard>
+                                                    <Storyboard TargetName="CarouselNextPrevButtonTemplateContentPresenter" TargetProperty="FontIcon.Opacity">
+                                                        <DoubleAnimation From="0" To="1" Duration="0:0:0.100" EnableDependentAnimation="True"/>
+                                                    </Storyboard>
+                                                </VisualTransition.Storyboard>
+                                            </VisualTransition>
+                                        </VisualStateGroup.Transitions>
+                                        <VisualState x:Name="Normal">
+                                            <VisualState.Setters>
+                                                <Setter Target="CarouselNextPrevButtonTemplateContentPresenter.Opacity" Value="1"/>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Disabled">
+                                            <VisualState.Setters>
+                                                <Setter Target="CarouselNextPrevButtonTemplateContentPresenter.Opacity" Value="0"/>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Fill="{TemplateBinding Background}"/>
+                                <ContentPresenter x:Name="CarouselNextPrevButtonTemplateContentPresenter" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="{TemplateBinding Padding}" Content="{TemplateBinding Content}" Opacity="{TemplateBinding Opacity}"/>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="CarouselNextPrevButtonFontIconStyle" TargetType="FontIcon">
+                <Setter Property="FontFamily" Value="{StaticResource SymbolThemeFontFamily}"/>
+                <Setter Property="FontSize" Value="32"/>
+                <Setter Property="FontWeight" Value="ExtraBold"/>
+            </Style>
+            <Style TargetType="local:VirtualizingAnimatedCarousel" >
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="local:VirtualizingAnimatedCarousel">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <local:VirtualizingAnimatedCarouselPrevButton
+                                x:Name="CarouselPrevButton"
+                                Grid.Column="0"
+                                Style="{StaticResource CarouselNextPrevButtonStyle}">
+                                    <FontIcon Style="{StaticResource CarouselNextPrevButtonFontIconStyle}" Glyph="&#xE76B;"/>
+                                    <!--Chevron Left-->
+                                </local:VirtualizingAnimatedCarouselPrevButton>
+                                <ScrollViewer
+                                x:Name="CarouselScrollViewer"
+                                Grid.Column="1"
+                                HorizontalScrollBarVisibility="Hidden"
+                                VerticalScrollBarVisibility="Disabled"
+                                HorizontalSnapPointsAlignment="Center"
+                                HorizontalSnapPointsType="Mandatory"
+                                VerticalAlignment="Center"
+                                VerticalScrollMode="Disabled"
+                                HorizontalScrollMode="Auto">
+                                    <local:SelectableSnapPointForwardingRepeater
+                                    x:Name="CarouselRepeater"
+                                    HorizontalCacheLength="{TemplateBinding HorizontalCacheLength}"
+                                    VerticalCacheLength="{TemplateBinding VerticalCacheLength}"
+                                    RepeatCount="{TemplateBinding RepeatCount}"
+                                    ItemsSource="{TemplateBinding ItemsSource}"
+                                    SelectedItem="{TemplateBinding SelectedItem}"
+                                    ItemTemplate="{TemplateBinding ItemTemplate}">
+                                        <local:SelectableSnapPointForwardingRepeater.Layout>
+                                            <local:VirtualizingAnimatedCarouselStackLayout
+                                            x:Name="CarouselRepeaterLayout"
+                                            ItemWidth="{TemplateBinding ItemWidth}"
+                                            ItemHeight="{TemplateBinding ItemHeight}"
+                                            ItemScaleRatio="{TemplateBinding ItemScaleRatio}"
+                                            Spacing="{TemplateBinding ItemSpacing}"
+                                            HorizontalCacheLength="{TemplateBinding HorizontalCacheLength}"
+                                            RepeatCount="{TemplateBinding RepeatCount}"/>
+                                        </local:SelectableSnapPointForwardingRepeater.Layout>
+                                    </local:SelectableSnapPointForwardingRepeater>
+                                </ScrollViewer>
+                                <local:VirtualizingAnimatedCarouselNextButton x:Name="CarouselNextButton"
+                                    Grid.Column="2"
+                                    Style="{StaticResource CarouselNextPrevButtonStyle}">
+                                    <FontIcon Style="{StaticResource CarouselNextPrevButtonFontIconStyle}" Glyph="&#xE76C;"/>
+                                    <!--Chevron Right-->
+                                </local:VirtualizingAnimatedCarouselNextButton>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </Page.Resources>
+
+    <Grid>
+        <local:VirtualizingAnimatedCarousel
+            ItemsSource="{x:Bind ViewModel.Users, Mode=TwoWay}"
+            SelectedItem="{x:Bind ViewModel.SelectedUser, Mode=TwoWay}"
+            ItemWidth="450"
+            ItemHeight="525"
+            ItemScaleRatio="0.5"
+            ItemSpacing="50"
+            HorizontalCacheLength="0.5"
+            VerticalCacheLength="0">
+            <local:VirtualizingAnimatedCarousel.ItemTemplate>
+                <DataTemplate>
+                    <UserControl
+                                IsTabStop="True"
+                                UseSystemFocusVisuals="True"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center">
+                        <StackPanel>
+                            <Rectangle Fill="Blue" Stretch="UniformToFill" Height="375"/>
+                            <TextBlock Text="{Binding}"  HorizontalAlignment="Center" FontSize="32" Foreground="Gray"/>
+                        </StackPanel>
+                    </UserControl>
+                </DataTemplate>
+            </local:VirtualizingAnimatedCarousel.ItemTemplate>
+        </local:VirtualizingAnimatedCarousel>
+    </Grid>
+</Page>
